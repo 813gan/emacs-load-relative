@@ -139,35 +139,36 @@ methods work we will use the file-name value find via
   ;; persists after loading or evaluating a file. So it would be
   ;; suitable if __FILE__ were called from inside a function.
 
-  (cond
+  (file-truename
+   (cond
 
-   ;; lread.c's readevalloop sets (car current-load-list)
-   ;; via macro LOADHIST_ATTACH of lisp.h. At least in Emacs
-   ;; 23.0.91 and this code goes back to '93.
-   ((stringp (car-safe current-load-list)) (car current-load-list))
+    ;; lread.c's readevalloop sets (car current-load-list)
+    ;; via macro LOADHIST_ATTACH of lisp.h. At least in Emacs
+    ;; 23.0.91 and this code goes back to '93.
+    ((stringp (car-safe current-load-list)) (car current-load-list))
 
-   ;; load-like things. 'relative-file-expand' tests in
-   ;; test/test-load.el indicates we should put this ahead of
-   ;; $#.
-   (load-file-name)
+    ;; load-like things. 'relative-file-expand' tests in
+    ;; test/test-load.el indicates we should put this ahead of
+    ;; $#.
+    (load-file-name)
 
-   ;; Pick up "name of this file as a string" which is set on
-   ;; reading and persists. In contrast, load-file-name is set only
-   ;; inside eval. As such, it won't work when not in the middle of
-   ;; loading.
-   ;; (#$)
+    ;; Pick up "name of this file as a string" which is set on
+    ;; reading and persists. In contrast, load-file-name is set only
+    ;; inside eval. As such, it won't work when not in the middle of
+    ;; loading.
+    ;; (#$)
 
-   ;; eval-like things
-   ((buffer-file-name))
+    ;; eval-like things
+    ((buffer-file-name))
 
-   ;; When byte compiling. FIXME: use a more thorough precondition like
-   ;; byte-compile-file is somehwere in the backtrace or that
-   ;; bytecomp-filename comes from that routine?
-   ;; FIXME: `bytecomp-filename' doesn't exist any more (since Emacs-24.1).
-   ((boundp 'bytecomp-filename) bytecomp-filename)
+    ;; When byte compiling. FIXME: use a more thorough precondition like
+    ;; byte-compile-file is somehwere in the backtrace or that
+    ;; bytecomp-filename comes from that routine?
+    ;; FIXME: `bytecomp-filename' doesn't exist any more (since Emacs-24.1).
+    ((boundp 'bytecomp-filename) bytecomp-filename)
 
-   (t (symbol-file symbol) ;; last resort
-      )))
+    (t (symbol-file symbol) ;; last resort
+       ))))
 
 (defun autoload-relative (function-or-list
                           file &optional docstring interactive type

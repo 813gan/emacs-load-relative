@@ -261,7 +261,7 @@ the process of being loaded or eval'd.
 
 WARNING: it is best to run this function before any
 buffer-setting or buffer changing operations."
-  (let ((file (or opt-file (__FILE__) default-directory))
+  (let ((file (file-truename (or opt-file (__FILE__) default-directory)))
         (prefix))
     (unless file
       ;; FIXME: Since default-directory should basically never be nil, this
